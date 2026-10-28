@@ -1,0 +1,15 @@
+
+# Arquivos gerados pelo Maven
+target/
+
+# Banco de dados local
+historias.db
+*.db
+*.db-shm
+*.db-wal
+
+# Configurações locais do VS Code
+.vscode/
+
+# Arquivos temporários
+*.log

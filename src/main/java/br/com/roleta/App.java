@@ -193,23 +193,11 @@ public class App extends Application {
         subtitulo.setWrapText(true);
         subtitulo.setAlignment(Pos.CENTER);
 
-        Button turma2 = criarBotao(
-            "👶  2 ANOS", "#7357E8", "#FFFFFF", 300, 60
-        );
+        Button turmaCreche = criarBotao("👶  CRECHE", "#7357E8", "#FFFFFF", 300, 70);
 
-        Button turma3 = criarBotao(
-            "🧸  3 ANOS", "#2BAE83", "#FFFFFF", 300, 60
-        );
+        Button turmaOficina = criarBotao("🎨  OFICINA DO SABER", "#FFB84D", "#553600", 300, 70);
 
-        Button turma45 = criarBotao(
-            "🎨  4 A 5 ANOS\nOFICINA DO SABER",
-            "#FFB84D", "#553600", 300, 70
-        );
-
-        Button turma68 = criarBotao(
-            "🔎  6 A 8 ANOS\nREVER PARA APRENDER",
-            "#FF8A65", "#FFFFFF", 300, 70
-        );
+        Button turmaRever = criarBotao("🔎  REVER", "#FF8A65", "#FFFFFF", 300, 70);
 
         Button btnAdicionarHistoria = criarBotao(
             "➕  ADICIONAR HISTÓRIA",
@@ -226,10 +214,10 @@ public class App extends Application {
             + "-fx-text-fill: #52617A;"
         );
 
-        turma2.setOnAction(e -> selecionarTurma("2 anos", palco));
-        turma3.setOnAction(e -> selecionarTurma("3 anos", palco));
-        turma45.setOnAction(e -> selecionarTurma("4 a 5 anos", palco));
-        turma68.setOnAction(e -> selecionarTurma("6 a 8 anos", palco));
+        
+        turmaCreche.setOnAction(e -> selecionarTurma("CRECHE", palco));
+        turmaOficina.setOnAction(e -> selecionarTurma("OFICINA DO SABER", palco));
+        turmaRever.setOnAction(e -> selecionarTurma("REVER", palco));
 
         btnAdicionarHistoria.setOnAction(
             e -> abrirFormularioHistoria(palco)
@@ -249,10 +237,9 @@ public class App extends Application {
             22,
             titulo,
             subtitulo,
-            turma2,
-            turma3,
-            turma45,
-            turma68,
+            turmaCreche,
+            turmaOficina,
+            turmaRever,
             btnAdicionarHistoria,
             btnGerenciarHistorias,
             mensagem
@@ -341,34 +328,43 @@ public class App extends Application {
                 new javafx.scene.control.TextField();
         campoPersonagem.setPromptText("Personagem principal");
 
+        
         javafx.scene.control.ComboBox<String> campoFaixa =
                 new javafx.scene.control.ComboBox<>();
+
         campoFaixa.getItems().addAll(
-                "2 anos", "3 anos", "4 a 5 anos", "6 a 8 anos"
+                "2 e 3 anos",
+                "4 a 5 anos",
+                "6 a 8 anos"
         );
-        campoFaixa.setValue("2 anos");
+
+        campoFaixa.setValue("2 e 3 anos");
         campoFaixa.setMaxWidth(Double.MAX_VALUE);
 
         javafx.scene.control.ComboBox<String> campoTurma =
                 new javafx.scene.control.ComboBox<>();
+
         campoTurma.getItems().addAll(
-                "2 anos", "3 anos",
-                "Oficina do Saber", "Rever para Aprender"
+                "CRECHE",
+                "OFICINA DO SABER",
+                "REVER"
         );
-        campoTurma.setValue("2 anos");
+
+        campoTurma.setValue("CRECHE");
         campoTurma.setMaxWidth(Double.MAX_VALUE);
 
         campoFaixa.setOnAction(e -> {
             String faixa = campoFaixa.getValue();
 
-            if ("4 a 5 anos".equals(faixa)) {
-                campoTurma.setValue("Oficina do Saber");
+            if ("2 e 3 anos".equals(faixa)) {
+                campoTurma.setValue("CRECHE");
+            } else if ("4 a 5 anos".equals(faixa)) {
+                campoTurma.setValue("OFICINA DO SABER");
             } else if ("6 a 8 anos".equals(faixa)) {
-                campoTurma.setValue("Rever para Aprender");
-            } else {
-                campoTurma.setValue(faixa);
+                campoTurma.setValue("REVER");
             }
         });
+
 
         Button btnSalvar = new Button("SALVAR HISTÓRIA");
         btnSalvar.setMaxWidth(Double.MAX_VALUE);

@@ -70,6 +70,32 @@ public class BancoDeDados {
                     "ALTER TABLE historias ADD COLUMN faixa_etaria TEXT NOT NULL DEFAULT ''"
                 );
             }
+
+            String migracao = """
+                UPDATE historias
+                SET
+                    faixa_etaria = CASE
+                        WHEN turma IN ('2 anos', '3 anos')
+                            THEN '2 e 3 anos'
+                        WHEN turma IN ('4 a 5 anos', 'Oficina do Saber')
+                            THEN '4 a 5 anos'
+                        WHEN turma IN ('6 a 8 anos', 'Rever para Aprender')
+                            THEN '6 a 8 anos'
+                        ELSE faixa_etaria
+                    END,
+
+                    turma = CASE
+                        WHEN turma IN ('2 anos', '3 anos')
+                            THEN 'CRECHE'
+                        WHEN turma IN ('4 a 5 anos', 'Oficina do Saber')
+                            THEN 'OFICINA DO SABER'
+                        WHEN turma IN ('6 a 8 anos', 'Rever para Aprender')
+                            THEN 'REVER'
+                        ELSE turma
+                    END
+                """;
+
+            comando.execute(migracao);
         }
     }
 
@@ -153,7 +179,7 @@ public class BancoDeDados {
         List<String[]> historias = new ArrayList<>();
 
         String sql = """
-            SELECT id, nome, livro, personagem, faixa_etaria
+            SELECT id, nome, livro, personagem, turma AS faixa_etaria
             FROM historias
             ORDER BY id
             """;
@@ -205,7 +231,7 @@ public class BancoDeDados {
         String sql = """
             SELECT nome, pista, livro, personagem, turma
             FROM historias
-            WHERE faixa_etaria = ?
+            WHERE turma = ?
             ORDER BY id
             """;
 
@@ -242,78 +268,80 @@ public class BancoDeDados {
             )
             """;
 
+        
         String[][] livros = {
             {
                 "O que será que é?",
                 "Sou um bichinho que encontra algo estranho e tenta descobrir o que é.",
-                "Perigoso", "Toupeira", "2 anos", "2 anos"
+                "Perigoso", "Toupeira", "2 e 3 anos", "CRECHE"
             },
             {
                 "Bolinhas coloridas",
                 "Sou um livro com bolinhas coloridas. Você aperta uma bolinha e a brincadeira começa.",
-                "Aperte Aqui", "Bolinhas coloridas", "2 anos", "2 anos"
+                "Aperte Aqui", "Bolinhas coloridas", "2 e 3 anos", "CRECHE"
             },
             {
                 "A caixa de brincar",
                 "Sou um coelhinho que usa a imaginação para transformar uma caixa em muitas coisas.",
-                "Não é uma Caixa", "Coelho", "2 anos", "2 anos"
+                "Não é uma Caixa", "Coelho", "2 e 3 anos", "CRECHE"
             },
             {
                 "A lagarta comilona",
                 "Sou pequenininha, adoro comer e depois me transformo em uma linda borboleta.",
-                "Uma Lagarta Muito Comilona", "Lagarta", "2 anos", "2 anos"
+                "Uma Lagarta Muito Comilona", "Lagarta", "2 e 3 anos", "CRECHE"
             },
             {
                 "O monstrinho das emoções",
                 "Sou um monstrinho que precisa organizar suas emoções e descobrir o que está sentindo.",
-                "O Monstro das Cores", "Monstro das Cores", "3 anos", "3 anos"
+                "O Monstro das Cores", "Monstro das Cores", "2 e 3 anos", "CRECHE"
             },
             {
                 "Caixas e carinho",
                 "Sou um pai que adora caixas e usa a imaginação para demonstrar carinho pelo filho.",
-                "O Homem que Amava Caixas", "Pai e filho", "3 anos", "3 anos"
+                "O Homem que Amava Caixas", "Pai e filho", "2 e 3 anos", "CRECHE"
             },
             {
                 "O ratinho esperto",
                 "Sou um ratinho esperto que encontra animais na floresta e inventa uma criatura chamada Grúfalo.",
-                "O Grúfalo", "Ratinho", "3 anos", "3 anos"
+                "O Grúfalo", "Ratinho", "2 e 3 anos", "CRECHE"
             },
             {
                 "O elefante colorido",
                 "Sou um elefante muito especial, coberto de várias cores, como um arco-íris.",
-                "Elmer", "Elmer", "3 anos", "3 anos"
+                "Elmer", "Elmer", "2 e 3 anos", "CRECHE"
             },
             {
                 "Muitos resmungos",
                 "Sou um menino que carrega muitos resmungos e precisa descobrir como seguir por um caminho diferente.",
-                "Edmundo & o Resmungo", "Edmundo", "4 a 5 anos", "4 a 5 anos"
+                "Edmundo & o Resmungo", "Edmundo", "4 a 5 anos", "OFICINA DO SABER"
             },
             {
                 "O menino da panela",
                 "Sou um menino muito brincalhão, cheio de energia e conhecido por usar uma panela na cabeça.",
-                "O Menino Maluquinho", "Menino Maluquinho", "4 a 5 anos", "4 a 5 anos"
+                "O Menino Maluquinho", "Menino Maluquinho", "4 a 5 anos", "OFICINA DO SABER"
             },
             {
                 "Aprendendo a ver",
                 "Sou um menino que começa a reconhecer as letras nas placas e nas coisas que vê pelas ruas.",
-                "O Menino que Aprendeu a Ver", "Joãozinho", "4 a 5 anos", "4 a 5 anos"
+                "O Menino que Aprendeu a Ver", "Joãozinho", "4 a 5 anos", "OFICINA DO SABER"
             },
             {
                 "Desafios matemáticos",
                 "Um viajante resolve problemas aparentemente impossíveis usando raciocínio matemático e estratégias engenhosas. Qual é o livro?",
-                "O Homem que Calculava", "Beremiz Samir", "6 a 8 anos", "6 a 8 anos"
+                "O Homem que Calculava", "Beremiz Samir", "6 a 8 anos", "REVER"
             },
             {
                 "Um diário da realidade",
                 "Uma escritora registra seu cotidiano e revela as dificuldades da pobreza e as desigualdades sociais. Qual é o livro?",
-                "Quarto de Despejo", "Carolina Maria de Jesus", "6 a 8 anos", "6 a 8 anos"
+                "Quarto de Despejo", "Carolina Maria de Jesus", "6 a 8 anos", "REVER"
             },
             {
                 "O detetive da dedução",
                 "Um detetive analisa pistas, examina depoimentos e usa a lógica para desvendar mistérios. Qual é o livro?",
-                "Poirot Investiga", "Hercule Poirot", "6 a 8 anos", "6 a 8 anos"
+                "Poirot Investiga", "Hercule Poirot", "6 a 8 anos", "REVER"
             }
         };
+
 
         try (Connection conexao = conectar();
             PreparedStatement comando = conexao.prepareStatement(sql)) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -14,14 +13,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class App extends Application {
 
@@ -45,195 +39,40 @@ public class App extends Application {
     private RotateTransition animacaoRoleta;
     private StackPane roleta;
 
+    
     @Override
     public void start(Stage palco) throws Exception {
         BancoDeDados.inicializar();
+        BancoDeDados.cadastrarLivrosIniciais();
         carregarHistorias();
 
-        FXMLLoader carregador = new FXMLLoader(
-            getClass().getResource("/br/com/roleta/Roleta.fxml")
-        );
-
-        javafx.scene.Parent raiz = carregador.load();
-
-        System.out.println(getClass().getResource("/br/com/roleta/Roleta.fxml"));
-
-        Label saudacao = new Label("✨ HORA DE BRINCAR COM AS HISTÓRIAS! ✨");
-        saudacao.setStyle("-fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: #24345C;");
-        saudacao.setWrapText(true);
-        saudacao.setAlignment(Pos.CENTER);
-
-        Label subtitulo = new Label("Gire a roleta, leia a pista e descubra o conto!");
-        subtitulo.setStyle("-fx-font-size: 14px; -fx-text-fill: #52617A;");
-        subtitulo.setWrapText(true);
-        subtitulo.setAlignment(Pos.CENTER);
-
-        Label rotuloRoleta = new Label("🎡 ROLETA MÁGICA");
-        rotuloRoleta.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #24345C;");
-
-        Circle aro = new Circle(145);
-        aro.setFill(Color.web("#FFFFFF"));
-        aro.setStroke(Color.web("#7C5CFC"));
-        aro.setStrokeWidth(8);
-
-        Circle interior = new Circle(126);
-        interior.setFill(Color.web("#E9E5FF"));
-        interior.setStroke(Color.web("#FFB84D"));
-        interior.setStrokeWidth(5);
-
-        Label textoCentro = new Label("✨\nGIRE!\n✨");
-        textoCentro.setAlignment(Pos.CENTER);
-        textoCentro.setStyle("-fx-font-size: 27px; -fx-font-weight: bold; -fx-text-fill: #5A42C7;");
-
-        roleta = new StackPane(aro, interior, textoCentro);
-        roleta.setMinSize(300, 300);
-        roleta.setPrefSize(300, 300);
-        roleta.setMaxSize(300, 300);
-
-        botaoGirar = criarBotao("🎡  GIRAR A ROLETA", "#7357E8", "#FFFFFF", 235, 54);
-        botaoGirar.setStyle(botaoGirar.getStyle() + "-fx-font-size: 18px;");
-
-        timerLabel = new Label("⏰ 05:00");
-        timerLabel.setAlignment(Pos.CENTER);
-        timerLabel.setMinWidth(180);
-        timerLabel.setPadding(new Insets(12, 20, 12, 20));
-        timerLabel.setStyle(
-            "-fx-background-color: #FFF1C9; -fx-background-radius: 18;"
-            + "-fx-text-fill: #7A4C00; -fx-font-size: 21px; -fx-font-weight: bold;"
-            + "-fx-border-color: #FFC857; -fx-border-width: 2; -fx-border-radius: 18;"
-        );
-
-        Label tituloItem = new Label("🎁  O QUE SAIU?");
-        tituloItem.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;");
-
-        nomeHistoria = new Label("Sua surpresa aparece aqui!");
-        nomeHistoria.setWrapText(true);
-        nomeHistoria.setAlignment(Pos.CENTER);
-        nomeHistoria.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;");
-
-        VBox caixaItem = new VBox(12, tituloItem, nomeHistoria);
-        caixaItem.setAlignment(Pos.CENTER);
-        caixaItem.setPadding(new Insets(18));
-        caixaItem.setMinHeight(125);
-        caixaItem.setStyle("-fx-background-color: #FF8A65; -fx-background-radius: 24;");
-
-        Label tituloPista = new Label("🔎  SUA PISTA");
-        tituloPista.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #315C47;");
-
-        textoPista = new Label("Leia a pista e tente adivinhar a história.");
-        textoPista.setWrapText(true);
-        textoPista.setAlignment(Pos.CENTER);
-        textoPista.setStyle("-fx-font-size: 17px; -fx-text-fill: #263B35;");
-
-        VBox caixaPista = new VBox(10, tituloPista, textoPista);
-        caixaPista.setAlignment(Pos.CENTER);
-        caixaPista.setPadding(new Insets(18));
-        caixaPista.setMinHeight(135);
-        caixaPista.setStyle(
-            "-fx-background-color: #DDF7E8; -fx-background-radius: 24;"
-            + "-fx-border-color: #8ED9AE; -fx-border-width: 2; -fx-border-radius: 24;"
-        );
-
-        Label tituloDescricao = new Label("📚  MISSÃO DO DETETIVE");
-        tituloDescricao.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #34517B;");
-
-        descricaoLivro = new Label("Pense bem: qual história combina com essa pista?");
-        descricaoLivro.setWrapText(true);
-        descricaoLivro.setAlignment(Pos.CENTER);
-        descricaoLivro.setStyle("-fx-font-size: 15px; -fx-text-fill: #34445F;");
-
-        VBox caixaDescricao = new VBox(8, tituloDescricao, descricaoLivro);
-        caixaDescricao.setAlignment(Pos.CENTER);
-        caixaDescricao.setPadding(new Insets(16));
-        caixaDescricao.setMinHeight(100);
-        caixaDescricao.setStyle(
-            "-fx-background-color: #DDEBFF; -fx-background-radius: 24;"
-            + "-fx-border-color: #A8C9FF; -fx-border-width: 2; -fx-border-radius: 24;"
-        );
-
-        Label tituloResposta = new Label("🏆  RESPOSTA");
-        tituloResposta.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #795015;");
-
-        resposta = new Label("O livro e o personagem vão aparecer aqui!");
-        resposta.setWrapText(true);
-        resposta.setAlignment(Pos.CENTER);
-        resposta.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #795015;");
-
-        VBox caixaResposta = new VBox(8, tituloResposta, resposta);
-        caixaResposta.setAlignment(Pos.CENTER);
-        caixaResposta.setPadding(new Insets(16));
-        caixaResposta.setMinHeight(110);
-        caixaResposta.setStyle(
-            "-fx-background-color: #FFF0C2; -fx-background-radius: 24;"
-            + "-fx-border-color: #FFD166; -fx-border-width: 2; -fx-border-radius: 24;"
-        );
-
-        botaoRevelar = criarBotao("💡  REVELAR RESPOSTA", "#2BAE83", "#FFFFFF", 220, 46);
-        botaoProxima = criarBotao("➡  PRÓXIMA RODADA", "#FFB84D", "#553600", 220, 46);
-        botaoRevelar.setDisable(true);
-        botaoProxima.setDisable(true);
-
-        HBox linhaBotoes = new HBox(12, botaoRevelar, botaoProxima);
-        linhaBotoes.setAlignment(Pos.CENTER);
-
-        status = new Label("Vamos lá! Clique em Girar para começar.");
-        status.setWrapText(true);
-        status.setAlignment(Pos.CENTER);
-        status.setStyle("-fx-font-size: 13px; -fx-text-fill: #52617A;");
-
-        VBox ladoEsquerdo = new VBox(20, rotuloRoleta, roleta, botaoGirar, timerLabel);
-        ladoEsquerdo.setAlignment(Pos.CENTER);
-        ladoEsquerdo.setPadding(new Insets(20));
-        ladoEsquerdo.setMinWidth(340);
-        ladoEsquerdo.setStyle("-fx-background-color: #F1EEFF; -fx-background-radius: 28;");
-
-        VBox ladoDireito = new VBox(14, caixaItem, caixaPista, caixaDescricao, caixaResposta, linhaBotoes, status);
-        ladoDireito.setAlignment(Pos.CENTER);
-        ladoDireito.setPadding(new Insets(8));
-        ladoDireito.setMinWidth(390);
-        ladoDireito.setPrefWidth(430);
-        VBox.setVgrow(caixaPista, Priority.ALWAYS);
-
-        HBox conteudo = new HBox(20, ladoEsquerdo, ladoDireito);
-        conteudo.setAlignment(Pos.CENTER);
-        conteudo.setPadding(new Insets(20));
-
-        VBox layout = new VBox(8, saudacao, subtitulo, conteudo);
-        layout.setAlignment(Pos.TOP_CENTER);
-        layout.setPadding(new Insets(20));
-        layout.setStyle("-fx-background-color: linear-gradient(to bottom right, #FFF9F0, #F0FAFF);");
-
-        relogio = new Timeline(new KeyFrame(Duration.seconds(1), evento -> {
-            if (segundosRestantes > 0) {
-                segundosRestantes--;
-                atualizarTimer();
-            }
-            if (segundosRestantes <= 0) {
-                relogio.stop();
-                status.setText("⏳ O tempo acabou! Está na hora de revelar a resposta.");
-                botaoRevelar.setDisable(false);
-            }
-        }));
-        relogio.setCycleCount(Timeline.INDEFINITE);
-
-        animacaoRoleta = new RotateTransition(Duration.seconds(1.25), roleta);
-        animacaoRoleta.setByAngle(720);
-        animacaoRoleta.setOnFinished(evento -> {
-            relogio.playFromStart();
-            botaoRevelar.setDisable(false);
-        });
-
-        botaoGirar.setOnAction(evento -> sortear());
-        botaoRevelar.setOnAction(evento -> revelar());
-        botaoProxima.setOnAction(evento -> sortear());
-
-        Scene cena = new Scene(raiz, 1000, 900);
-        palco.setTitle("Roleta de Histórias - Aventura de Adivinhação");
-        palco.setScene(cena);
-        palco.setMinWidth(950);
-        palco.setMinHeight(800);
-        palco.show();
+        abrirTelaTurmas(palco);
     }
+
+    private void abrirRoleta(Stage palco, String faixaEtaria) {
+        try {
+            FXMLLoader carregador = new FXMLLoader(
+                getClass().getResource("/br/com/roleta/Roleta.fxml")
+            );
+
+            javafx.scene.Parent raiz = carregador.load();
+
+            RoletaController controlador = carregador.getController();
+            controlador.selecionarFaixaEtaria(faixaEtaria);
+
+            Scene cena = new Scene(raiz, 1000, 900);
+
+            palco.setTitle(
+                "Roleta de Histórias - " + faixaEtaria
+            );
+            palco.setScene(cena);
+            palco.show();
+
+        } catch (Exception erro) {
+            erro.printStackTrace();
+        }
+    }
+
 
     private Button criarBotao(String texto, String fundo, String corTexto, double largura, double altura) {
         Button botao = new Button(texto);
@@ -248,39 +87,25 @@ public class App extends Application {
         return botao;
     }
 
-    private void carregarHistorias() {
-        // Cadastre novas pistas manualmente copiando o formato de uma linha abaixo.
-        historias.add(new Historia("Capa Vermelha",
-            "Quem usava uma capa vermelha ao visitar a avó e encontrou um lobo falante?",
-            "Chapeuzinho Vermelho", "Chapeuzinho Vermelho"));
-        historias.add(new Historia("Pão e migalhas",
-            "Quais irmãos tentaram marcar o caminho com migalhas e se perderam na floresta?",
-            "João e Maria", "João e Maria"));
-        historias.add(new Historia("Maçã envenenada",
-            "Quem mordeu uma maçã envenenada e caiu em um sono profundo?",
-            "Branca de Neve e os Sete Anões", "Branca de Neve"));
-        historias.add(new Historia("Feijões mágicos",
-            "Quem subiu por um pé de feijão gigante e chegou à casa de um gigante?",
-            "João e o Pé de Feijão", "João"));
-        historias.add(new Historia("Tijolos e palha",
-            "Quem construiu casas de materiais diferentes para se proteger do Lobo Mau?",
-            "Os Três Porquinhos", "Os Três Porquinhos"));
-        historias.add(new Historia("Coelho Branco",
-            "Quem seguiu um Coelho Branco e entrou em um mundo cheio de coisas malucas?",
-            "Alice no País das Maravilhas", "Alice"));
-        historias.add(new Historia("Uma rosa",
-            "Qual personagem cuidava de uma rosa especial em seu pequeno planeta?",
-            "O Pequeno Príncipe", "O Pequeno Príncipe"));
-        historias.add(new Historia("Chave antiga",
-            "Quem encontrou uma chave que ajudou a abrir um jardim secreto?",
-            "O Jardim Secreto", "Mary Lennox"));
-        historias.add(new Historia("Árvore generosa",
-            "Qual história mostra uma árvore que oferece partes de si para ajudar um menino?",
-            "A Árvore Generosa", "O Menino"));
-        historias.add(new Historia("Ciclo da vida",
-            "Qual jovem leão aprende sobre o ciclo da vida e se torna rei?",
-            "O Rei Leão", "Simba"));
-        disponiveis.addAll(historias);
+    public void carregarHistorias() {
+        try {
+            historias.clear();
+            disponiveis.clear();
+
+            historias.addAll(BancoDeDados.listarHistorias());
+            disponiveis.addAll(historias);
+
+            System.out.println(
+                "Histórias carregadas do banco: " + historias.size()
+            );
+
+        } catch (java.sql.SQLException erro) {
+            erro.printStackTrace();
+            throw new RuntimeException(
+                "Não foi possível carregar as histórias do banco de dados.",
+                erro
+            );
+        }
     }
 
     private void sortear() {
@@ -346,5 +171,398 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void abrirTelaTurmas(Stage palco) {
+        Label titulo = new Label("📚 ROLETA DE HISTÓRIAS");
+        titulo.setStyle(
+            "-fx-font-size: 28px;"
+            + "-fx-font-weight: bold;"
+            + "-fx-text-fill: #24345C;"
+        );
+        titulo.setWrapText(true);
+        titulo.setAlignment(Pos.CENTER);
+
+        Label subtitulo = new Label(
+            "Escolha a faixa etária para começar a aventura!"
+        );
+        subtitulo.setStyle(
+            "-fx-font-size: 17px;"
+            + "-fx-text-fill: #52617A;"
+        );
+        subtitulo.setWrapText(true);
+        subtitulo.setAlignment(Pos.CENTER);
+
+        Button turma2 = criarBotao(
+            "👶  2 ANOS", "#7357E8", "#FFFFFF", 300, 60
+        );
+
+        Button turma3 = criarBotao(
+            "🧸  3 ANOS", "#2BAE83", "#FFFFFF", 300, 60
+        );
+
+        Button turma45 = criarBotao(
+            "🎨  4 A 5 ANOS\nOFICINA DO SABER",
+            "#FFB84D", "#553600", 300, 70
+        );
+
+        Button turma68 = criarBotao(
+            "🔎  6 A 8 ANOS\nREVER PARA APRENDER",
+            "#FF8A65", "#FFFFFF", 300, 70
+        );
+
+        Button btnAdicionarHistoria = criarBotao(
+            "➕  ADICIONAR HISTÓRIA",
+            "#16A34A", "#FFFFFF", 300, 60
+        );
+
+        Label mensagem = new Label(
+            "Selecione uma turma para continuar."
+        );
+        mensagem.setWrapText(true);
+        mensagem.setAlignment(Pos.CENTER);
+        mensagem.setStyle(
+            "-fx-font-size: 14px;"
+            + "-fx-text-fill: #52617A;"
+        );
+
+        turma2.setOnAction(e -> selecionarTurma("2 anos", palco));
+        turma3.setOnAction(e -> selecionarTurma("3 anos", palco));
+        turma45.setOnAction(e -> selecionarTurma("4 a 5 anos", palco));
+        turma68.setOnAction(e -> selecionarTurma("6 a 8 anos", palco));
+
+        btnAdicionarHistoria.setOnAction(
+            e -> abrirFormularioHistoria(palco)
+        );
+
+        Button btnGerenciarHistorias = criarBotao(
+            "🗑 GERENCIAR HISTÓRIAS",
+            "#DC2626", "#FFFFFF", 300, 60
+        );
+
+        btnGerenciarHistorias.setOnAction(
+            e -> abrirTelaExcluirHistorias(palco)
+        );
+
+
+        VBox layout = new VBox(
+            22,
+            titulo,
+            subtitulo,
+            turma2,
+            turma3,
+            turma45,
+            turma68,
+            btnAdicionarHistoria,
+            btnGerenciarHistorias,
+            mensagem
+        );
+
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(35));
+        layout.setStyle(
+            "-fx-background-color: linear-gradient("
+            + "to bottom right, #FFF9F0, #F0FAFF);"
+        );
+
+        Scene cena = new Scene(layout, 650, 700);
+
+        palco.setTitle("Roleta de Histórias - Seleção de Turma");
+        palco.setScene(cena);
+        palco.setMinWidth(600);
+        palco.setMinHeight(650);
+        palco.show();
+    }
+
+    
+    private void selecionarTurma(String faixaEtaria, Stage palco) {
+        try {
+            disponiveis.clear();
+
+            for (Historia historia : historias) {
+                if (historia.getTurma().equalsIgnoreCase(faixaEtaria)) {
+                    disponiveis.add(historia);
+                }
+            }
+
+            if (disponiveis.isEmpty()) {
+                Label aviso = new Label(
+                    "Não existem livros cadastrados para esta faixa etária."
+                );
+                aviso.setWrapText(true);
+
+                Button voltar = criarBotao(
+                    "VOLTAR ÀS TURMAS",
+                    "#7357E8", "#FFFFFF", 220, 50
+                );
+
+                voltar.setOnAction(e -> abrirTelaTurmas(palco));
+
+                VBox layout = new VBox(20, aviso, voltar);
+                layout.setAlignment(Pos.CENTER);
+                layout.setPadding(new Insets(30));
+
+                palco.setScene(new Scene(layout, 500, 300));
+                return;
+            }
+
+            abrirRoleta(palco, faixaEtaria);
+
+        } catch (Exception erro) {
+            erro.printStackTrace();
+        }
+    }
+    
+    private void abrirFormularioHistoria(Stage palco) {
+        Stage janela = new Stage();
+
+        janela.initOwner(palco);
+        janela.initModality(javafx.stage.Modality.WINDOW_MODAL);
+        janela.setTitle("Adicionar História");
+
+        Label titulo = new Label("📚 Cadastrar Nova História");
+        titulo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+
+        javafx.scene.control.TextField campoNome =
+                new javafx.scene.control.TextField();
+        campoNome.setPromptText("Nome da história ou objeto");
+
+        javafx.scene.control.TextArea campoPista =
+                new javafx.scene.control.TextArea();
+        campoPista.setPromptText("Pista para a criança");
+        campoPista.setPrefRowCount(3);
+        campoPista.setWrapText(true);
+
+        javafx.scene.control.TextField campoLivro =
+                new javafx.scene.control.TextField();
+        campoLivro.setPromptText("Título do livro");
+
+        javafx.scene.control.TextField campoPersonagem =
+                new javafx.scene.control.TextField();
+        campoPersonagem.setPromptText("Personagem principal");
+
+        javafx.scene.control.ComboBox<String> campoFaixa =
+                new javafx.scene.control.ComboBox<>();
+        campoFaixa.getItems().addAll(
+                "2 anos", "3 anos", "4 a 5 anos", "6 a 8 anos"
+        );
+        campoFaixa.setValue("2 anos");
+        campoFaixa.setMaxWidth(Double.MAX_VALUE);
+
+        javafx.scene.control.ComboBox<String> campoTurma =
+                new javafx.scene.control.ComboBox<>();
+        campoTurma.getItems().addAll(
+                "2 anos", "3 anos",
+                "Oficina do Saber", "Rever para Aprender"
+        );
+        campoTurma.setValue("2 anos");
+        campoTurma.setMaxWidth(Double.MAX_VALUE);
+
+        campoFaixa.setOnAction(e -> {
+            String faixa = campoFaixa.getValue();
+
+            if ("4 a 5 anos".equals(faixa)) {
+                campoTurma.setValue("Oficina do Saber");
+            } else if ("6 a 8 anos".equals(faixa)) {
+                campoTurma.setValue("Rever para Aprender");
+            } else {
+                campoTurma.setValue(faixa);
+            }
+        });
+
+        Button btnSalvar = new Button("SALVAR HISTÓRIA");
+        btnSalvar.setMaxWidth(Double.MAX_VALUE);
+        btnSalvar.setStyle(
+                "-fx-background-color: #16A34A;"
+                + "-fx-text-fill: white;"
+                + "-fx-font-weight: bold;"
+                + "-fx-padding: 12;"
+        );
+
+        Label mensagem = new Label();
+        mensagem.setWrapText(true);
+
+        btnSalvar.setOnAction(e -> {
+            String nome = campoNome.getText().trim();
+            String pista = campoPista.getText().trim();
+            String livro = campoLivro.getText().trim();
+            String personagem = campoPersonagem.getText().trim();
+            String faixa = campoFaixa.getValue();
+            String turma = campoTurma.getValue();
+
+            if (nome.isEmpty() || pista.isEmpty()
+                    || livro.isEmpty() || personagem.isEmpty()
+                    || faixa == null || turma == null) {
+                mensagem.setText("Preencha todos os campos.");
+                return;
+            }
+
+            try {
+                Historia historia = new Historia(
+                        nome, pista, livro, personagem, turma
+                );
+
+                BancoDeDados.salvarHistoria(historia, faixa);
+
+                mensagem.setText("História salva com sucesso!");
+                btnSalvar.setDisable(true);
+
+                carregarHistorias();
+
+            } catch (java.sql.SQLException erro) {
+                erro.printStackTrace();
+                mensagem.setText("Erro ao salvar a história no banco.");
+            }
+        });
+
+        VBox formulario = new VBox(
+                12,
+                titulo,
+                new Label("Nome:"), campoNome,
+                new Label("Pista:"), campoPista,
+                new Label("Livro:"), campoLivro,
+                new Label("Personagem:"), campoPersonagem,
+                new Label("Faixa etária:"), campoFaixa,
+                new Label("Turma:"), campoTurma,
+                btnSalvar, mensagem
+        );
+
+        formulario.setPadding(new Insets(20));
+        formulario.setStyle("-fx-background-color: #FFF9F0;");
+
+        javafx.scene.control.ScrollPane rolagem =
+                new javafx.scene.control.ScrollPane(formulario);
+        rolagem.setFitToWidth(true);
+
+        janela.setScene(new Scene(rolagem, 450, 700));
+        janela.show();
+    }
+
+
+    private void abrirTelaExcluirHistorias(Stage palco) {
+        Stage janela = new Stage();
+
+        janela.initOwner(palco);
+        janela.initModality(javafx.stage.Modality.WINDOW_MODAL);
+        janela.setTitle("Gerenciar Histórias");
+
+        Label titulo = new Label("📚 HISTÓRIAS CADASTRADAS");
+        titulo.setStyle(
+            "-fx-font-size: 22px;"
+            + "-fx-font-weight: bold;"
+            + "-fx-text-fill: #24345C;"
+        );
+
+        javafx.scene.control.ListView<String> lista =
+            new javafx.scene.control.ListView<>();
+
+        java.util.List<String[]> historias;
+
+        try {
+            historias = BancoDeDados.listarHistoriasParaExcluir();
+
+            for (String[] historia : historias) {
+                lista.getItems().add(
+                    historia[1]
+                    + " | Livro: " + historia[2]
+                    + " | Personagem: " + historia[3]
+                    + " | Faixa: " + historia[4]
+                );
+            }
+
+        } catch (java.sql.SQLException erro) {
+            erro.printStackTrace();
+            lista.getItems().add("Erro ao carregar histórias.");
+            historias = new java.util.ArrayList<>();
+        }
+
+        Label mensagem = new Label("Selecione uma história para excluir.");
+        mensagem.setWrapText(true);
+
+        Button btnExcluir = criarBotao(
+            "🗑 EXCLUIR HISTÓRIA",
+            "#DC2626", "#FFFFFF", 250, 50
+        );
+
+        Button btnVoltar = criarBotao(
+            "VOLTAR",
+            "#839CB5", "#FFFFFF", 250, 50
+        );
+
+        final java.util.List<String[]> listaHistorias = historias;
+
+        btnExcluir.setOnAction(e -> {
+            int indice = lista.getSelectionModel().getSelectedIndex();
+
+            if (indice < 0) {
+                mensagem.setText("Selecione uma história primeiro.");
+                return;
+            }
+
+            String[] selecionada = listaHistorias.get(indice);
+
+            javafx.scene.control.Alert confirmacao =
+                new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.CONFIRMATION
+                );
+
+            confirmacao.setTitle("Confirmar exclusão");
+            confirmacao.setHeaderText("Excluir esta história?");
+            confirmacao.setContentText(
+                selecionada[1] + " - " + selecionada[2]
+            );
+
+            java.util.Optional<javafx.scene.control.ButtonType> resposta =
+                confirmacao.showAndWait();
+
+            if (resposta.isPresent()
+                    && resposta.get() == javafx.scene.control.ButtonType.OK) {
+
+                try {
+                    int id = Integer.parseInt(selecionada[0]);
+
+                    boolean excluida =
+                        BancoDeDados.excluirHistoriaPorId(id);
+
+                    if (excluida) {
+                        listaHistorias.remove(indice);
+                        lista.getItems().remove(indice);
+
+                        mensagem.setText("História excluída com sucesso!");
+                    } else {
+                        mensagem.setText("História não encontrada no banco.");
+                    }
+
+                } catch (java.sql.SQLException erro) {
+                    erro.printStackTrace();
+                    mensagem.setText("Erro ao excluir a história.");
+                }
+            }
+        });
+
+        btnVoltar.setOnAction(e -> janela.close());
+
+        
+
+        VBox layout = new VBox(
+            15,
+            titulo,
+            lista,
+            mensagem,
+            btnExcluir,
+            btnVoltar
+        );
+
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(25));
+        layout.setStyle(
+            "-fx-background-color: linear-gradient("
+            + "to bottom right, #FFF9F0, #F0FAFF);"
+        );
+
+        Scene cena = new Scene(layout, 750, 600);
+
+        janela.setScene(cena);
+        janela.show();
     }
 }

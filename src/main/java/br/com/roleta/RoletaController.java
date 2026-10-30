@@ -1,6 +1,7 @@
 
 package br.com.roleta;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,44 +20,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class RoletaController {
 
     private final Random random = new Random();
 
-    private final String[] nomesHistorias = {
-        "Chapeuzinho Vermelho",
-        "Os Três Porquinhos",
-        "O Patinho Feio",
-        "João e Maria",
-        "A Cigarra e a Formiga",
-        "O Leão e o Ratinho",
-        "Pinóquio",
-        "A Lebre e a Tartaruga"
-    };
+    private final List<Historia> historias = new ArrayList<>();
+    private final List<Historia> disponiveis = new ArrayList<>();
 
-    private final String[] pistasHistorias = {
-        "Uma menina leva uma cesta para visitar a avó.",
-        "Três irmãos constroem casas diferentes.",
-        "Uma ave se sente diferente das outras.",
-        "Dois irmãos encontram uma casa feita de doces.",
-        "Um inseto canta enquanto outro trabalha.",
-        "Um pequeno animal ajuda um grande rei.",
-        "Um boneco de madeira sonha em ser menino.",
-        "Uma corrida coloca um animal rápido contra um lento."
-    };
-
-    private final String[] respostasHistorias = {
-        "Chapeuzinho Vermelho",
-        "Os Três Porquinhos",
-        "O Patinho Feio",
-        "João e Maria",
-        "A Cigarra e a Formiga",
-        "O Leão e o Ratinho",
-        "Pinóquio",
-        "A Lebre e a Tartaruga"
-    };
+    private Historia historiaAtual;
 
     private final List<Integer> indicesDisponiveis =
         new ArrayList<>();
@@ -95,7 +69,34 @@ public class RoletaController {
     private StackPane roleta;
 
     @FXML
+    private Button btnNovaRodada;
+
+    @FXML
     private void initialize() {
+        
+    try {
+        BancoDeDados.inicializar();
+        BancoDeDados.cadastrarLivrosIniciais();
+
+        historias.clear();
+        historias.addAll(BancoDeDados.listarHistorias());
+
+        disponiveis.clear();
+        disponiveis.addAll(historias);
+
+        System.out.println(
+            "Livros carregados do banco: " + historias.size()
+        );
+
+    } catch (SQLException erro) {
+        erro.printStackTrace();
+        lblMensagem.setText(
+            "Erro ao carregar os livros do banco de dados."
+        );
+        btnGirar.setDisable(true);
+        return;
+    }
+        
         Group desenhoRoleta = criarRoleta();
 
         roleta.getChildren().clear();
@@ -125,27 +126,38 @@ public class RoletaController {
         });
     }
 
+    
     @FXML
     private void sortear() {
         if (animacaoRoleta == null ||
-                animacaoRoleta.getStatus()
-                    == Animation.Status.RUNNING) {
+                animacaoRoleta.getStatus() == Animation.Status.RUNNING) {
             return;
         }
 
-        // Prepara uma nova rodada quando todas as histórias
-        // já tiverem sido sorteadas.
-        if (indicesDisponiveis.isEmpty()) {
-            for (int i = 0; i < nomesHistorias.length; i++) {
-                indicesDisponiveis.add(i);
+        // Não repete livros que já foram sorteados nesta rodada.
+        if (disponiveis.isEmpty()) {
+            if (relogio != null) {
+                relogio.stop();
             }
+
+            historiaAtual = null;
+            lblObjeto.setText("Todas as histórias foram sorteadas!");
+            lblPista.setText("");
+            lblResposta.setText("");
+            lblCronometro.setText("00:00");
+            lblMensagem.setText(
+                "Parabéns! Você completou a rodada."
+            );
+
+            btnGirar.setDisable(true);
+            btnRevelar.setDisable(true);
+            btnProxima.setDisable(true);
+            return;
         }
 
-        // Escolhe uma história sem repetir na rodada.
-        int posicao = random.nextInt(indicesDisponiveis.size());
-
-        indiceHistoriaAtual =
-            indicesDisponiveis.remove(posicao);
+        // Escolhe um livro diretamente da lista carregada do banco.
+        int posicao = random.nextInt(disponiveis.size());
+        historiaAtual = disponiveis.remove(posicao);
 
         lblObjeto.setText("Girando...");
         lblPista.setText("");
@@ -159,19 +171,15 @@ public class RoletaController {
         btnRevelar.setDisable(true);
         btnProxima.setDisable(true);
 
-        // Gira várias voltas e acrescenta um ângulo aleatório.
         animacaoRoleta.setByAngle(
             1440 + random.nextDouble() * 360
         );
 
         animacaoRoleta.setOnFinished(event -> {
-            lblObjeto.setText(
-                nomesHistorias[indiceHistoriaAtual]
-            );
+            lblObjeto.setText(historiaAtual.getNome());
 
             lblPista.setText(
-                "Pista: "
-                + pistasHistorias[indiceHistoriaAtual]
+                "Pista: " + historiaAtual.getPista()
             );
 
             lblResposta.setText("Resposta oculta");
@@ -180,26 +188,61 @@ public class RoletaController {
                 "Interprete a história usando gestos, sem falar!"
             );
 
-            btnGirar.setDisable(false);
+            btnGirar.setDisable(disponiveis.isEmpty());
             btnRevelar.setDisable(false);
             btnProxima.setDisable(false);
 
-            // Começa a contagem somente quando a roleta parar.
+            if (disponiveis.isEmpty()) {
+                lblMensagem.setText(
+                    "Ultima historia da rodada! Revele a resposta e conclua a atividade."
+                );
+            }
+
             iniciarCronometro();
         });
 
         animacaoRoleta.playFromStart();
     }
 
+    public void selecionarFaixaEtaria(String faixaEtaria) {
+        try {
+            List<Historia> filtradas =
+                    BancoDeDados.listarHistoriasPorFaixaEtaria(faixaEtaria);
+
+            historias.clear();
+            historias.addAll(filtradas);
+
+            disponiveis.clear();
+            disponiveis.addAll(filtradas);
+
+            if (filtradas.isEmpty()) {
+                lblMensagem.setText(
+                        "Não há livros cadastrados para " + faixaEtaria
+                );
+                btnGirar.setDisable(true);
+            } else {
+                lblMensagem.setText(
+                        "Turma selecionada: " + faixaEtaria
+                );
+                btnGirar.setDisable(false);
+            }
+
+        } catch (SQLException erro) {
+            erro.printStackTrace();
+            lblMensagem.setText("Erro ao carregar livros da turma.");
+            btnGirar.setDisable(true);
+        }
+    }
+
     @FXML
     private void revelarResposta() {
-        if (indiceHistoriaAtual < 0) {
+        if (historiaAtual == null) {
             return;
         }
 
         lblResposta.setText(
-            ""
-            + respostasHistorias[indiceHistoriaAtual]
+            "" + historiaAtual.getLivro()
+            + "\nPersonagem: " + historiaAtual.getPersonagem()
         );
     }
 
@@ -289,4 +332,49 @@ public class RoletaController {
 
         return grupo;
     }
+
+    @FXML
+    private Button btnVoltarTurmas;
+
+    @FXML
+    private void voltarTurmas() {
+        Stage palco = (Stage) btnVoltarTurmas
+                .getScene()
+                .getWindow();
+
+        App app = new App();
+        app.carregarHistorias();
+        app.abrirTelaTurmas(palco);
+    }
+    
+    @FXML
+    private void novaRodada() {
+        if (historias.isEmpty()) {
+            lblMensagem.setText("Não há histórias para iniciar uma nova rodada.");
+            return;
+        }
+
+        disponiveis.clear();
+        disponiveis.addAll(historias);
+
+        historiaAtual = null;
+        segundosRestantes = 5 * 60;
+
+        if (relogio != null) {
+            relogio.stop();
+        }
+
+        lblCronometro.setText("05:00");
+        lblObjeto.setText("🎁 OBJETO SORTEADO");
+        lblPista.setText("A PISTA APARECERÁ AQUI");
+        lblResposta.setText("🏆 RESPOSTA:");
+        lblMensagem.setText(
+                "Nova rodada iniciada! Clique em GIRAR para sortear."
+        );
+
+        btnGirar.setDisable(false);
+        btnRevelar.setDisable(true);
+        btnProxima.setDisable(true);
+    }
+
 }

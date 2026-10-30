@@ -42,17 +42,20 @@
                   </VBox>
                   <VBox minHeight="500.0" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #F2E4F9; -fx-background-radius: 24; -fx-padding: 20;">
                      <children>
-                        <Label fx:id="lblObjeto" prefHeight="80.0" prefWidth="500.0" style="-fx-background-color: #96D7EB; -fx-text-fill: #686466; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 15; -fx-border-color: #000000; -fx-border-radius: 16;" text="🎁 OBJETO SORTEADO">
+                        <Label fx:id="lblObjeto" prefHeight="80.0" prefWidth="500.0" style="-fx-background-color: #96D7EB; -fx-text-fill: #686466; -fx-font-size: 18px; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 15; -fx-border-color: #000000; -fx-border-radius: 16;" text="🎁 OBJETO SORTEADO">
                            <font>
-                              <Font size="11.0" />
+                              <Font size="10.0" />
                            </font>
                         </Label>
-                        <Label fx:id="lblPista" prefHeight="120.0" prefWidth="500.0" style="-fx-background-color: #B1E1E9; -fx-text-fill: #686466; -fx-font-size: 18px; -fx-padding: 15; -fx-background-radius: 16; -fx-font-weight: bold; -fx-border-color: #000000; -fx-border-radius: 16;" text="A PISTA APARECERÁ AQUI" translateY="15.0" wrapText="true">
+                        <Label fx:id="lblPista" prefHeight="120.0" prefWidth="500.0" style="-fx-background-color: #B1E1E9; -fx-text-fill: #686466; -fx-font-size: 14px; -fx-padding: 15; -fx-background-radius: 16; -fx-font-weight: bold; -fx-border-color: #000000; -fx-border-radius: 16;" text="A PISTA APARECERÁ AQUI" translateY="15.0" wrapText="true" maxWidth="600.0" >
                            <font>
-                              <Font size="11.0" />
+                              <Font size="10.0" />
                            </font>
                         </Label>
-                        <Label fx:id="lblResposta" alignment="CENTER" prefHeight="80.0" prefWidth="500.0" style="-fx-background-color: #F2E4F9; -fx-text-fill: #686466; -fx-font-size: 18px; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 15; -fx-border-color: #000000; -fx-border-radius: 16;" text="🏆 RESPOSTA:" textAlignment="CENTER" translateY="30.0" wrapText="true" />
+                        <Label fx:id="lblResposta" alignment="CENTER" prefHeight="80.0" prefWidth="500.0" style="-fx-background-color: #F2E4F9; -fx-text-fill: #686466; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 15; -fx-border-color: #000000; -fx-border-radius: 16;" text="🏆 RESPOSTA:" textAlignment="CENTER" translateY="30.0" wrapText="true">
+                           <font>
+                              <Font size="10.0" />
+                           </font></Label>
                         <Button fx:id="btnRevelar" mnemonicParsing="false" onAction="#revelarResposta" prefHeight="50.0" prefWidth="130.0" style="-fx-background-color: #96D7EB; -fx-text-fill: #686466; -fx-font-size: 16; -fx-font-weight: bold; -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 12 20 12 20; -fx-cursor: hand;" text="REVELAR" translateY="35.0" />
                         <Button fx:id="btnProxima" mnemonicParsing="false" onAction="#proximaHistoria" prefHeight="50.0" prefWidth="130.0" style="-fx-background-color: #839CB5; -fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 12 20 12 20; -fx-cursor: hand;" text="PRÓXIMA" translateX="135.0" translateY="-15.0" />
                         <Label fx:id="lblMensagem" style="-fx-text-fill: #686466; -fx-font-size: 14; -fx-font-style: italic; -fx-padding: 8;" text="Vamos lá! Gire a roleta, leia a pista e descubra a história!" wrapText="true">
@@ -60,6 +63,21 @@
                               <Font size="11.0" />
                            </font>
                         </Label>
+                        <Button fx:id="btnVoltarTurmas"
+                              mnemonicParsing="false"
+                              onAction="#voltarTurmas"
+                              prefHeight="45.0"
+                              prefWidth="220.0"
+                              style="-fx-background-color: #839CB5; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 16; -fx-cursor: hand;"
+                              text="VOLTAR ÀS TURMAS" />
+                        
+                        <Button fx:id="btnNovaRodada"
+                              mnemonicParsing="false"
+                              onAction="#novaRodada"
+                              prefHeight="45.0"
+                              prefWidth="220.0"
+                              style="-fx-background-color: #16A34A; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 16; -fx-cursor: hand;"
+                              text="NOVA RODADA" />
                      </children>
                   </VBox>
                </children>

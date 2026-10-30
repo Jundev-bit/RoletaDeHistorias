@@ -1,5 +1,8 @@
 package br.com.roleta;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,8 +14,48 @@ import java.util.List;
 
 public class BancoDeDados {
 
-    private static final String URL
-            = "jdbc:sqlite:historias.db";
+
+    private static final String PASTA_DADOS =
+        System.getenv("APPDATA") + "\\RoletaDeHistorias";
+
+    private static final String URL =
+            "jdbc:sqlite:" + PASTA_DADOS + "\\historias.db";
+
+    private static void copiarBancoInicialSeNecessario()
+        throws SQLException {
+
+        Path destino = Paths.get(PASTA_DADOS, "historias.db");
+
+        // Se já existe um banco neste computador, não altera nada.
+        if (Files.exists(destino)) {
+            return;
+        }
+
+        try {
+            Path localPrograma = Paths.get(
+                BancoDeDados.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI()
+            );
+
+            Path pastaPrograma = Files.isDirectory(localPrograma)
+                    ? localPrograma
+                    : localPrograma.getParent();
+
+            Path bancoOriginal = pastaPrograma.resolve("historias.db");
+
+            if (Files.exists(bancoOriginal)) {
+                Files.copy(bancoOriginal, destino);
+            }
+
+        } catch (Exception e) {
+            throw new SQLException(
+                "Não foi possível copiar o banco inicial de histórias.", e
+            );
+        }
+    }        
 
     public static Connection conectar()
             throws SQLException {
@@ -21,6 +64,14 @@ public class BancoDeDados {
     }
 
     public static void inicializar() throws SQLException {
+
+        java.io.File pasta = new java.io.File(PASTA_DADOS);
+
+        if (!pasta.exists() && !pasta.mkdirs()) {
+            throw new SQLException("Não foi possível criar a pasta do banco de dados.");
+        }
+
+        copiarBancoInicialSeNecessario();
 
         String sql = """
             CREATE TABLE IF NOT EXISTS historias (
